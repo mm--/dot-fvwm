@@ -1,0 +1,16 @@
+SetEnv DIR Next                                                             
+
+AddToFunc FocusRaiseAndStuff
++ I Iconify off
++ I Focus
++ I Raise
+
+AddToFunc SwitchWindow
++ I $[DIR] (CurrentPage, !Iconic, !Sticky) FocusRaiseAndStuff
++ I Deschedule 134000
++ I PipeRead `[ "$[DIR]" == "Prev" ] && \
+echo 'SetEnv NDIR Next' || \
+echo 'SetEnv NDIR Prev'`
++ I Schedule 700 134000 SetEnv DIR $[NDIR]
+
+Key Tab A M  SwitchWindow

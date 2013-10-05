@@ -1,0 +1,133 @@
+DestroyMenu EdgeMenu
+AddToMenu EdgeMenu "Edge Menu" Title
+ + "&Edge scrolls desks"     EdgeCommandToggle
+ + "Edge Lock (&X)" EdgeLockToggle
+ + "&Weird Edge" WeirdEdgeToggle
+ + "Edge &Reset" EdgeReset
+ + "Hi&de Panel"   EdgePanelOn
+ + "&Show Panel"   EdgePanelOff
+ + "&Quake Panel"   SendToModule DeskBar PressButton desk
+
+
+DestroyFunc EdgeScrollLeft
+AddToFunc EdgeScrollLeft
++ I PipeRead "test 0 -ne $[page.nx] && echo WindowId root WarpToWindow `expr $[vp.width] - 10`p $[pointer.y]p &&\
+    	     echo WeirdScrollLeft"
+
+DestroyFunc EdgeScrollRight
+AddToFunc EdgeScrollRight
++ I PipeRead "test `expr $[desk.pagesx] - 1` -ne $[page.nx] && echo WindowId root WarpToWindow 10p $[pointer.y]p &&\
+    	     echo WeirdScrollRight"
+
+DestroyFunc EdgeScrollDown
+AddToFunc EdgeScrollDown
++ I PipeRead "test `expr $[desk.pagesy] - 1` -ne $[page.ny] && echo WindowId root WarpToWindow $[pointer.x]p 10p &&\
+    	     echo WeirdScrollDown"
+
+DestroyFunc EdgeScrollUp
+AddToFunc EdgeScrollUp
++ I PipeRead "test $[page.ny] -ne 0 && echo WindowId root WarpToWindow $[pointer.x]p `expr $[vp.height] - 10`p &&\
+    	     echo WeirdScrollUp"
+
+
+DestroyFunc WeirdEdgeToggle
+AddToFunc WeirdEdgeToggle
++ I Test (EnvIsSet fvwmWeirdEdgeToggle) EdgeReset
++ I TestRc (NoMatch) WeirdEdgeOn
+
+DestroyFunc WeirdEdgeOn
+AddToFunc WeirdEdgeOn
++ I EdgeReset
++ I EdgeCommand East EdgeScrollRight
++ I EdgeCommand West EdgeScrollLeft
++ I EdgeCommand North EdgeScrollUp
++ I EdgeCommand South EdgeScrollDown
++ I SendToModule DeskBar ChangeButton left Title "<="
++ I SendToModule DeskBar ChangeButton right Title "=>"
++ I SetEnv fvwmWeirdEdgeToggle on
+
+DestroyFunc EdgeLockToggle
+AddToFunc EdgeLockToggle
++ I Test (EnvIsSet fvwmEdgeLockToggle) EdgeReset
++ I TestRc (NoMatch) EdgeLockOn
+
+DestroyFunc EdgeLockOn
+AddToFunc EdgeLockOn
++ I EdgeReset
++ I EdgeCommand East Nop
++ I EdgeCommand West Nop
++ I EdgeCommand North Nop
++ I EdgeCommand South Nop
++ I SendToModule DeskBar ChangeButton left Title "<X"
++ I SendToModule DeskBar ChangeButton right Title "X>"
++ I SetEnv fvwmEdgeLockToggle on
+
+DestroyFunc EdgeReset
+AddToFunc EdgeReset
++ I EdgeCommand East
++ I EdgeCommand West
++ I EdgeCommand North
++ I EdgeCommand South
++ I SendToModule DeskBar ChangeButton left Title "<"
++ I SendToModule DeskBar ChangeButton right Title ">"
++ I UnSetEnv fvwmEdgeLockToggle
++ I UnsetEnv fvwmEdgetoggle
++ I UnsetEnv fvwmWeirdEdgeToggle
+
+
+DestroyFunc EdgeCommandToggle
+AddToFunc EdgeCommandToggle
++ I Test (EnvIsSet fvwmEdgetoggle) EdgeReset
++ I TestRc (NoMatch) EdgeOn
+
+DestroyFunc EdgeOn
+AddToFunc EdgeOn
++ I EdgeReset
++ I EdgeCommand East EastFunc
++ I EdgeCommand West WestFunc
++ I SendToModule DeskBar ChangeButton left Title "<<"
++ I SendToModule DeskBar ChangeButton right Title ">>"
++ I SetEnv fvwmEdgetoggle on
+
+# DestroyFunc EdgeOff
+# AddToFunc EdgeOff
+# + I EdgeCommand East
+# + I EdgeCommand West
+# + I SendToModule DeskBar ChangeButton left Title "<"
+# + I SendToModule DeskBar ChangeButton right Title ">"
+# + I UnsetEnv fvwmEdgetoggle
+
+DestroyFunc EastFunc
+AddToFunc EastFunc
++ I PipeRead "test `expr $[desk.pagesx] - 1` = $[page.nx]  && echo GotoDeskAndPage `expr $[desk.n] + 1` 0 $[page.ny] || echo Scroll 100 0; \
+    	      echo WindowId root WarpToWindow 10p $[pointer.y]p"
+
+DestroyFunc WestFunc
+AddToFunc WestFunc
++ I PipeRead "test 0 = $[page.nx]  && echo GotoDeskAndPage `expr $[desk.n] - 1`  `expr $[desk.pagesx] - 1` $[page.ny] || echo Scroll -100 0; \
+    	      echo WindowId root WarpToWindow `expr $[vp.width] - 10`p $[pointer.y]p"
+
+
+DestroyFunc EdgePanelOn
+AddToFunc EdgePanelOn
++ I Next ("DeskBar") WindowShade East
++ I Next ("SidePanel") WindowShade East
++ I Next ("FvwmTaskBar") WindowShade South
++ I EwmhBaseStruts 0 0 0 0
++ I All (Maximized) Maximize true
+# + I EdgeCommand East EdgePanelOff
+
+DestroyFunc EdgePanelOff
+AddToFunc EdgePanelOff
++ I CursorMove -100p 0
++ I Next ("DeskBar") WindowShade False
++ I Next ("SidePanel") WindowShade False
++ I Next ("FvwmTaskBar") WindowShade False
++ I EwmhBaseStruts 0 100 0 48
++ I All (Maximized) Maximize true
+# + I EdgeCommand East
+
+
+# Local Variables:
+# mode:conf
+# End:

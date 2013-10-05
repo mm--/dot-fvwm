@@ -1,0 +1,20 @@
+
+Read $./app-stuff
+Read $./compositing-stuff
+Read $./edge-desk
+Read $./menus
+Read $./move-around
+Read $./organize-windows
+# Read $./pager-test
+Read $./the-bar
+Read $./switch-desks
+Read $./speak-clipboard
+Read $./pack-resize
+Read $./half-size
+Read $./pack-move
+Read $./save-page.conf
+Read $./miscellaneous.conf
+
+# Local Variables:
+# mode:conf
+# End:

@@ -1,0 +1,105 @@
+# Conky, a system monitor, based on torsmo
+#
+# Any original torsmo code is licensed under the BSD license
+#
+# All code written since the fork of torsmo is licensed under the GPL
+#
+# Please see COPYING for details
+#
+# Copyright (c) 2004, Hannu Saransaari and Lauri Hakkarainen
+# Copyright (c) 2005-2009 Brenden Matthews, Philip Kovacs, et. al. (see AUTHORS)
+# All rights reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+# Use Xft?
+use_xft yes
+xftfont Trebuchet MS:size=8
+xftalpha 0.8
+text_buffer_size 2048
+
+double_buffer yes
+# background yes
+cpu_avg_samples 2
+net_avg_samples 2
+diskio_avg_samples 2
+no_buffers yes
+out_to_console no
+out_to_stderr no
+update_interval 1.0
+uppercase no
+use_spacer none
+
+own_window yes
+own_window_type normal
+own_window_argb_visual yes
+own_window_argb_value 128
+own_window_title SidePanel
+# own_window_colour black #9080
+own_window_transparent yes
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+maximum_width 97
+minimum_size 97 650
+alignment top_right
+gap_x 0
+gap_y 205
+
+TEXT
+DATE ${hr 2}
+${alignc 20}${font Trebuchet MS:size=18}${time %H:%M}${font Trebuchet MS:size=8}${time :%S}${font}
+${alignc}${font Trebuchet MS:size=7}${time %a %Y.%b.%d}${font}
+
+CPU Usage: $cpu% ${hr 2}
+${font Trebuchet MS:size=6}${top cpu 1} - ${top name 1}
+${top cpu 2} - ${top name 2}${font}
+${cpugraph 0000ff ff0000 -t}
+RAM: $mem
+${font Trebuchet MS:size=6}${top_mem mem_res 1} - ${top_mem name 1}
+${top_mem mem_res 2} - ${top_mem name 2}${font}
+${memgraph 00dd00 00ff00}
+DISK: $diskio_read $diskio_write
+${font Trebuchet MS:size=6}${top_io io_read 1} ${top_io io_write 1} - ${top_io name 1}
+${top_io io_read 2} ${top_io io_write 2} - ${top_io name 2}${font}
+${diskiograph 00dd00 ff8c00 -t -l}
+${if_up eth0}Networking:
+Up: ${upspeed eth0}
+Down: ${downspeed eth0}
+${downspeedgraph eth0 00ffff 000080 -t -l}${endif}${if_up wlan0}Wlan0:
+Up: ${upspeed wlan0}
+# ${upspeedgraph wlan0 00ffff 000080 -t -l}
+Down: ${downspeed wlan0}
+${downspeedgraph wlan0 00ffff 000080 -t -l}${endif}
+${if_mpd_playing}
+${font Trebuchet MS:size=7}Music Player Daemon ${font}${hr 2}
+${scroll 16 4 $mpd_title }
+${scroll 16 2 $mpd_album }
+$mpd_artist
+$mpd_elapsed / $mpd_length
+${endif}
+Misc ${hr 2}
+Vol: ${exec amixer get Master -M | grep -oE "[[:digit:]]*%"}
+Fan: ${texeci 3 cat /proc/acpi/ibm/fan | grep speed | cut -s -f3}
+Temps: ${texeci 3 sensors -f | grep 'Core 1' | awk '{print $3}'}
+${color lightblue}
+Battery 
+${battery}
+${color lightgreen}
+${font Trebuchet MS:size=8}APT: ${texeci 1200 aptitude search '~U' | wc -l}
+# ${texeci 5 tail -n 3 /var/log/syslog | cut -d' ' -f5- | sed G | fold -w 16}
+${font}
+
+# Local Variables:
+# mode:conf
+# End:

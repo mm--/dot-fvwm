@@ -1,0 +1,41 @@
+Key Escape A 4 GotoDeskLastPage 0
+Key F1 A 4 GotoDeskLastPage 1
+Key F2 A 4 GotoDeskLastPage 2
+Key F3 A 4 GotoDeskLastPage 3
+Key F4 A 4 GotoDeskLastPage 4
+
+Key Escape A C4 MoveGotoDeskLastPage 0
+Key F1 A C4 MoveGotoDeskLastPage 1
+Key F2 A C4 MoveGotoDeskLastPage 2
+Key F3 A C4 MoveGotoDeskLastPage 3
+Key F4 A C4 MoveGotoDeskLastPage 4
+
+DestroyFunc GotoDeskLastPage
+AddToFunc GotoDeskLastPage
+ + I SaveDeskPage $[desk.n] $[page.nx] $[page.ny]
+ + I LastDeskPage-$0
+ + I GotoDesk 0 $0
+
+DestroyFunc MTDLPHelper
+AddToFunc MTDLPHelper
+ + I GotoDeskLastPage $0
+ + I WindowId $1 MoveToDesk 0 $[desk.n]
+ + I WindowId $1 MoveToPage $[page.nx] $[page.ny]
+
+DestroyFunc MoveGotoDeskLastPage
+AddToFunc MoveGotoDeskLastPage
+ + I Current MTDLPHelper $0 $[w.id]
+
+DestroyFunc SaveWindow
+AddToFunc SaveWindow
+ + I DestroyFunc MoveWindowHere
+ + I Current AddToFunc MoveWindowHere I GotoPage $1 $2
+
+DestroyFunc SaveDeskPage
+AddToFunc SaveDeskPage
+ + I DestroyFunc LastDeskPage-$0
+ + I AddToFunc LastDeskPage-$0 I GotoDeskAndPage $0 $1 $2
+
+# Local Variables:
+# mode:conf
+# End:

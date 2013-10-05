@@ -1,0 +1,28 @@
+Key Up      WTSF    CMS  HalfSizeWrapperUp
+Key Down      WTSF    CMS  HalfSizeWrapperDown
+Key Left      WTSF    CMS  HalfSizeWrapperLeft
+Key Right      WTSF    CMS  HalfSizeWrapperRight
+
+DestroyFunc HalfSizeWrapperLeft
+AddToFunc HalfSizeWrapperLeft
++ I ThisWindow PipeRead "echo Resize `expr $[w.width] / 2`p keep"
++ I WarpToWindow 50 50
+
+DestroyFunc HalfSizeWrapperRight
+AddToFunc HalfSizeWrapperRight
++ I ThisWindow PipeRead "echo Resize `expr $[w.width] / 2`p keep; echo AnimatedMove `expr $[w.width] / 2 + $[w.x]`p keep"
++ I WarpToWindow 50 50
+
+DestroyFunc HalfSizeWrapperUp
+AddToFunc HalfSizeWrapperUp
++ I ThisWindow PipeRead "echo Resize keep `expr $[cw.height] / 2`p"
++ I WarpToWindow 50 50
+
+DestroyFunc HalfSizeWrapperDown
+AddToFunc HalfSizeWrapperDown
++ I ThisWindow PipeRead "echo Resize keep `expr $[cw.height] / 2`p; echo AnimatedMove keep `expr $[cw.height] / 2 + $[w.y]`p"
++ I WarpToWindow 50 50
+
+# Local Variables:
+# mode:conf
+# End:

@@ -1,0 +1,13 @@
+# "&Emacs":"emacs":"emacs -mm":0:0:0
+"&Last FM":"Last.fm":"lastfm":4:1:0
+"&Ncmpc":"Ncmpc":"xterm -class Ncmpc -title Music_Player_Daemon ncmpc":4:1:0
+"&Iceweasel":"Iceweasel":"iceweasel":4:0:0
+"Ch&romium":"Chromium":"chromium":4:0:0
+#"&Mail":"Icedove":"icedove":4:0:1
+"&Pidgin":"Pidgin":"pidgin":4:1:1
+"&Gimp":"Gimp":"gimp":4:0:0
+"&Blender":"Blender":"blender":4:0:0
+"&Audacity":"Audacity":"audacity":4:0:0
+"In&kscape":"Inkscape":"inkscape":4:0:0
+"MPla&yer":"MPlayer":"":4:0:0
+"&Wireshark":"Wireshark":"wireshark":4:0:0

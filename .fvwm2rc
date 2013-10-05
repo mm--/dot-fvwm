@@ -1,0 +1,732 @@
+###########
+#  ____________________________
+# (   _________________________)
+#  ) (__  _  _  _    _
+# (   __)( \/ )( \/\/ )/\/\
+#  ) (    \  /  \    //    \
+# (___)    \/    \/\/(_/\/\_) 2.5.10
+#
+# My personal fvwm2rc file
+#
+#######################
+
+
+#####
+# Set Environment variables
+###########
+# SetEnv fvwm_icon $[FVWM_USERDIR]/icons
+# SetEnv fvwm_scrpt $./scripts
+# SetEnv fvwm_wallpapers $[FVWM_USERDIR]/wallpaper
+# SetEnv fvwm_screenshot $[FVWM_USERDIR]/screenshot
+
+# SetEnv fvwm_webbrowser /usr/bin/firefox
+# SetEnv fvwm_video_player /usr/bin/mplayer
+
+#####
+# Set the image path
+###########
+ImagePath $[FVWM_USERDIR]/icons:$[FVWM_USERDIR]/icons;.png:$[FVWM_USERDIR]/wallpaper:/usr/share/icons/:/usr/local/share/icons/:+
+
+#####
+# Virtual Desktops
+###########
+DesktopSize 4x4
+DesktopName 0 FVWM 0
+DesktopName 1 FVWM 1
+DesktopName 2 FVWM 2
+DesktopName 3 FVWM 3
+DesktopName 4 Junk
+EdgeScroll 100 100
+# EdgeResistance 150  150
+EdgeThickness 1
+
+#####
+# Mouse and Focus Behavior
+###########
+# ClickTime 350
+# MoveThreshold 3
+Style * SloppyFocus, MouseFocusClickRaises
+
+EwmhBaseStruts 0 100 0 48
+IgnoreModifiers L25
+
+#####
+# Global Styles and options
+###########
+Style * TileCascadePlacement, GrabFocusOff
+Style * !UsePPosition, ResizeOpaque
+OpaqueMoveSize -1
+Emulate MWM
+HideGeometryWindow Never
+Style * SnapAttraction 5 SameType Screen
+Style * SnapGrid 3 3
+XorValue 55555
+Style * DecorateTransient, DontRaiseTransient
+Style * DontLowerTransient, StackTransientParent
+Style * GrabFocusTransientOff
+Style * WindowShadeSteps 20, WindowShadeScrolls
+SetAnimation  10  -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+Style * MwmDecor, SlipperyIcon
+Style * IconBox screen w 15 15 -165 -15, IconGrid 3 3, IconFill right top
+
+#####
+# Program Styles
+###########
+Style "*" Icon 48x48/unknown.xpm
+Style "XTerm" Icon 48x48/xterm.png, NoActiveIconOverride, MiniIcon mini/xterm.png, PositionPlacement UnderMouse
+Style "urxvt" PositionPlacement UnderMouse
+Style "gvim" Icon 48x48/gvim.png, IconOverride, MiniIcon mini/gvim.png, EWMHMiniIconOverride
+Style "Firefox-bin" Icon 48x48/firefox.png, MiniIcon mini/firefox.png, EWMHMiniIconOverride
+Style "irssi" Icon 48x48/gaim.png, MiniIcon mini/irc.png
+Style "xmms" WindowListSkip, CirculateSkip
+Style "MPlayer" Icon 48x48/mplayer.png
+Style "Conky" !Iconifiable
+Style "FvwmConsole" PositionPlacement UnderMouse
+Style "Emacs" PositionPlacement UnderMouse
+Style "Evince" !UsePPosition, PositionPlacement Center
+Style "FvwmIconMan"  NoTitle, Sticky, WindowListSkip, BorderWidth 0
+Style "FvwmIconMan"  HandleWidth 0
+
+
+#####
+#
+# Destroyfunc FuncName
+# AddToFunc   FuncName
+# + I (Action to happen immediately)
+# + C (Action to happen on a mouse 'click)
+# + D (Action to happen on a mouse 'double click')
+# + H (Action to happen on a mouse 'hold')
+# + M (Action to happen on a mouse 'motion')
+#
+###########
+
+#####
+# Read some files
+###########
+Read $./josh-one/split-configs/loader
+
+#####
+# Basic Functions
+###########
+DestroyFunc WindowListFunc
+AddToFunc WindowListFunc
++ I Iconify off
++ I FlipFocus
++ I Raise
+# + I WarpToWindow 50 10p
+#Move mouse to middle of title bar.
+
+DestroyFunc FvwmDeleteOrDestroy
+AddToFunc   FvwmDeleteOrDestroy
++ H Nop
++ M Nop
++ C Delete
++ D Destroy
+
+DestroyFunc FvwmIconifyOrShade
+AddToFunc   FvwmIconifyOrShade
++ C Iconify
++ D WindowShade
+
+DestroyFunc FvwmMaximize
+AddToFunc   FvwmMaximize
++ H Nop
++ M Nop
++ C Maximize $0 $1
+
+DestroyFunc MoveAllHere
+AddToFunc MoveAllHere
++ I All MoveToDesk
++ I All MoveToPage
+
+DestroyFunc FvwmMoveOrMaximize
+AddToFunc FvwmMoveOrMaximize
++ C Raise
++ M Move
++ D Maximize $0 $1
+
+DestroyFunc FvwmMoveOrIconify
+AddToFunc   FvwmMoveOrIconify
++ M Move
++ D Iconify
+
+DestroyFunc FvwmMoveOrResize
+AddToFunc   FvwmMoveOrResize
++ M Move
++ D Resize
+
+DestroyFunc FvwmWindowShade
+AddToFunc   FvwmWindowShade
++ D WindowShade $0
+
+DestroyFunc HidePanel
+AddToFunc HidePanel
+   + I All (FvwmTaskBar) Iconify
+   + I All (FvwmButtons) Iconify
+   + I All (FvwmPager)   Iconify
+
+DestroyFunc ShowDesktop
+AddToFunc   ShowDesktop
++ I All (CurrentPage, !Iconic, Iconifiable) Iconify
++ I TestRc (NoMatch) All (CurrentPage) Iconify off
+
+#####
+# DebianMenu
+###########
+DestroyFunc BuildDebianMenu
+AddToFunc   BuildDebianMenu
++ I Read "/etc/X11/fvwm/menudefs.hook"
+
+#####
+# Program Launching Functions
+###########
+DestroyFunc FvwmXTerm
+AddToFunc   FvwmXTerm
++ I Exec exec xterm
+
+DestroyFunc FvwmXLock
+AddToFunc   FvwmXLock
++ I PipeRead "pgrep -x xscreensaver > /dev/null || echo Exec exec xscreensaver"
++ I Exec xscreensaver-command -lock; sleep 2; xset dpms force off
+
+DestroyFunc KillScreenSaver
+AddToFunc   KillScreenSaver
++ I Exec killall xscreensaver
++ I Exec xset -dpms
+
+DestroyFunc StartScreenSaver
+AddToFunc   StartScreenSaver
++ I Exec exec xscreensaver
++ I Exec xset +dpms
+
+DestroyFunc FvwmATerm
+AddToFunc   FvwmATerm
++ I Exec exec aterm
+
+DestroyFunc FvwmFireFox
+AddToFunc   FvwmFireFox
++ I Exec exec firefox
+
+DestroyFunc FvwmViewManPage
+AddToFunc   FvwmViewManPage
++ I Exec exec xterm -fg White -bg DarkBlue -g 80x40 -fn 7x14 -fb 7x14bold \
+ -n "Manual Page - $0" -T "Manual Page - $0" -e man "$0"
+
+DestroyFunc ToggleXterm
+AddToFunc ToggleXterm
+ + I All (my_xtermwindow) Close
+ + I TestRc (NoMatch) Exec xterm -T my_xtermwindow
+
+DestroyFunc GotoEmacs
+AddToFunc GotoEmacs
+ + I GotoDeskAndPage 0 0 0
+ + I All (emacs) Nop
+ + I TestRc (Match) Break
+ + I Exec exec emacs -xrm "*Page:0 0 1"
+ + I Wait emacs
+ + I All (CurrentPage, emacs) Maximize 100 100
+
+DestroyFunc GotoMail
+AddToFunc GotoMail
+ + I GotoDeskAndPage 1 0 1
+ + I All (icedove) Nop
+ + I TestRc (NoMatch) Exec exec icedove
+
+DestroyFunc GotoMusic
+AddToFunc GotoMusic
+ + I GotoDeskAndPage 1 1 0
+ # + I All (banshee-1) Nop
+ # + I TestRc (NoMatch) Exec exec banshee-1
+
+DestroyFunc GotoIM
+AddToFunc GotoIM
+ + I GotoDeskAndPage 1 1 1
+ + I All (pidgin) Nop
+ + I TestRc (NoMatch) Exec exec pidgin
+
+DestroyFunc GotoBrowser
+AddToFunc GotoBrowser
+ + I GotoDeskAndPage 1 0 0
+ + I All (Iceweasel) Nop
+ + I TestRc (NoMatch) Exec exec iceweasel
+
+#####
+# Startup Functions
+###########
+# Gets called every time, even during restarts
+DestroyFunc StartFunction
+AddToFunc   StartFunction
++ I All (conky) Close
++ I Exec exec conky -c $./josh-one/conky/side-panel
++ I Module FvwmTaskBar
+# + I Module FvwmPager SidePager 0 2
++ I Module FvwmEvent
++ I Module FvwmButtons DeskBar
+# + I Module FvwmButtons MyButtons
+# + I Module FvwmWinList MyWinList
++ I Module FvwmBacker
++ I BuildDebianMenu
++ I BuildMoveDeskMenu 5
++ I Exec exec xrdb -load ~/.Xdefaults
++ I Exec exec $[HOME]/code/sh/xscreensaver-lock.sh
++ I Exec exec xset b off # Turn off beeping
++ I Module FvwmCommandS
+
+DestroyFunc InitFunction
+AddToFunc   InitFunction
++ I Exec exec xscreensaver -nosplash
++ I Exec exec fvwm-root -r $[FVWM_USERDIR]/wallpaper/salvador.png
++ I Exec exec ~/code/sh/log-alert.sh
++ I FvwmXTerm
++ I Module FvwmBanner
+
+# + I Exec exec conky -c ~/.conkytest
+# + I Exec exec conky -c  $./josh-one/conky/goals
+
+DestroyFunc RestartFunction
+AddToFunc   RestartFunction
++ I Nop
+
+#####
+# Screenshot Functions (uses ImageMagick)
+###########
+DestroyFunc FvwmWindowScreenshot
+AddToFunc   FvwmWindowScreenshot
++ I ThisWindow (!Shaded !Iconic Iconifiable) \
+  PipeRead "echo WarpToWindow 50 5p; sleep 0.2; import -window $[w.id] -quality 100 -silent \
+  \"$[FVWM_USERDIR]/screenshot/$[w.name]-`date +%F[%R:%S]`.png\";\
+  echo WindowId root 1 WarpToWindow $[pointer.x]p $[pointer.y]p"
+
+DestroyFunc FvwmDesktopScreenshot
+AddToFunc   FvwmDesktopScreenshot
++ I ThisWindow \
+  PipeRead "echo WarpToWindow 25 5p; sleep 1.0; import -window root -quality 100 -silent \
+  \"$[FVWM_USERDIR]/screenshot/deskscreenshot-`date +%F[%R:%S]`.$[w.name].png\";\
+  echo WindowId root 1 WarpToWindow $[pointer.x]p $[pointer.y]p"
+
+#####
+# Basic Bindings
+###########
+Key F1 A M Menu RootMenu
+# Key Tab A 4 WindowList Root c c NoDeskSort, SelectOnRelease Meta_L
+Key R A 4 Exec exec $[FVWM_USERDIR]/run-dialog
+Key T A 4 ToggleXterm
+Key U A 4 Exec exec urxvt
+Key X A 4 Exec exec xterm
+Key A A 4 Exec exec aterm
+Key D A 4 ShowDesktop
+Key f2 A M Menu GotoMenu
+Key f3 A M GotoDeskAndPage prev
+Key f35 A C FvwmXLock
+Key XF86ScreenSaver A N FvwmXLock
+Key L A 4 FvwmXLock
+Key L A C4 KillScreenSaver
+Key L A SC4 StartScreenSaver
+Key C A 4 FvwmConsole
+Key Escape A S4 EscapeFunc
+
+Key S A 4 FvwmWindowScreenshot
+Key S A C4 FvwmDesktopScreenshot
+
+#Alt-Tab
+# Key Tab A M -
+Key Tab A M WindowList (CurrentPage) Root c c NoGeometry, CurrentAtEnd, IconifiedAtEnd, TitleForAllDesks
+Key I A 4 WindowList Root c c NoGeometry, CurrentAtEnd, IconifiedAtEnd
+Key Tab A 4 WindowList Root c c CurrentDesk, NoGeometry, CurrentAtEnd, IconifiedAtEnd, SelectOnRelease Super_L
+
+#Switch back to previous focused window in last
+# Key P A 4 Prev (!CurrentDesk) Focus
+
+# Key E A 4 WindowList ("emacs") Root c c NoGeometry, CurrentAtEnd, IconifiedAtEnd, SelectOnRelease Super_L
+#Just choose emacs
+
+Key grave A 4 Menu FvwmWindowOpsMenu
+
+Mouse 1 R A Menu RootMenu
+Mouse 3 R A Menu FvwmWindowOpsMenu
+Mouse 1 1 A FvwmDeleteOrDestroy
+Mouse 1 3 A FvwmIconifyOrShade
+Mouse 1 5 A FvwmMaximize 100 100
+Mouse 2 5 A FvwmMaximize 0 100
+Mouse 3 5 A FvwmMaximize 100 0
+# Mouse 1 W 4 FvwmMoveOrResize
+# The above breaks flash for some reason
+#Move window when holding Super anywhere
+# Mouse 1 W C4 FvwmResizeOnDrag
+Mouse 1 I A FvwmMoveOrIconify
+Mouse 1 T A FvwmMoveOrMaximize 100 100
+Mouse 4 T A FvwmWindowShade True
+Mouse 5 T A FvwmWindowShade False
+Mouse 3 R C Module FvwmPager -transient
+Mouse 3 T A Menu FvwmWindowOpsMenu
+
+# MPD bindings
+
+# Key XF86AudioPlay A N Exec exec mpc toggle
+# Key XF86AudioStop A N Exec exec mpc stop
+# Key XF86AudioPrev A N Exec exec mpc prev
+# Key XF86AudioNext A N Exec exec mpc next
+
+# Volume bindings
+Key bracketright A 4 Exec exec amixer set Master 2%+
+Key bracketleft A 4 Exec exec amixer set Master 2%-
+
+# Gnome-like key bindings
+Key f4 A M Close
+Key f10 A M MaximizeAndRaise
+
+DestroyFunc MaximizeAndRaise
+AddToFunc MaximizeAndRaise
++ I Raise
++ I Maximize 100 100
+
+# Hide/unhide the panel with Alt-F3
+# Key f3 A M HidePanel
+
+# Move between Desktops
+# Key 1 A 4 GotoDesk 0 0
+# Key 2 A 4 GotoDesk 0 1
+# Key 3 A 4 GotoDesk 0 2
+
+
+#####
+# Window Colorsets
+###########
+Colorset 3 fg #101060, bg #e6e7d7
+Colorset 4 fg Black, bg #a6a797
+Colorset 5 fg White, bg Black
+
+#####
+# Window Decor
+###########
+DestroyDecor MyDecor
+AddToDecor   MyDecor
++ TitleStyle LeftJustified Height 18
++ ButtonStyle 1 ActiveUp Vector 4 30x30@3 60x60@3 60x30@4 30x60@3 -- Flat
++ ButtonStyle 1 ActiveDown Vector 4 30x30@3 60x60@3 60x30@4 30x60@3 -- Flat
++ ButtonStyle 1 Inactive Vector 4 30x30@3 60x60@3 60x30@4 30x60@3 -- Flat
++ ButtonStyle 3 ActiveUp Vector 5 30x60@3 60x60@3 60x50@3 30x50@3 30x60@3 -- Flat
++ ButtonStyle 3 ActiveDown Vector 5 30x60@3 60x60@3 60x50@3 30x50@3 30x60@3 -- Flat
++ ButtonStyle 3 Inactive Vector 5 30x60@3 60x60@3 60x50@3 30x50@3 30x60@3 -- Flat
++ ButtonStyle 5 ActiveUp Vector 7 30x30@3 30x60@3 60x60@3 60x30@3 30x30@3 30x35@3 60x35@3 -- Flat
++ ButtonStyle 5 ActiveDown Vector 7 30x30@3 30x60@3 60x60@3 60x30@3 30x30@3 30x35@3 60x35@3 -- Flat
++ ButtonStyle 5 Inactive Vector 7 30x30@3 30x60@3 60x60@3 60x30@3 30x30@3 30x35@3 60x35@3 -- Flat
++ TitleStyle -- Flat
++ BorderStyle Simple -- NoInset Flat
++ ButtonStyle All -- UseTitleStyle
+
+
+#Read $./windowdecors/brushedmetal/config #Brushed metal theme
+#####
+# Window Styles
+###########
+Style "*" UseDecor MyDecor
+# Style "*" Font "xft:Sans:Bold:size=8:minspace=False:antialias=True"
+Style "*" Font "xft:Courier New:Bold:size=10:minspace=False:antialias=True"
+Style "*" BorderWidth 1, HandleWidth 1
+Style "*" MWMBorder, FirmBorder
+Style "*" Colorset 4
+Style "*" HilightColorset 3
+Style "*" BorderColorset 5
+Style "*" HilightBorderColorset 4
+
+#####
+# Menu Colorsets
+###########
+# Colorset 7 fg Black, bg #e6e7d7, sh Black, hi #202070
+Colorset 7 fg Black, Translucent White 75, \
+  hi Black, sh Black
+Colorset 8 fg DarkRed, bg #e6e7d7, sh Black, hi #202070
+
+#####
+# MenuStyles
+###########
+# MenuStyle * PopupDelayed, PopupDelay 300, PopdownImmediately
+# MenuStyle * PopupOffset -5 100, TitleWarpOff
+# MenuStyle * TitleUnderlines2, SeparatorsLong, TrianglesSolid
+# MenuStyle * AnimationOff, AutomaticHotkeysOff
+# MenuStyle * BorderWidth 2
+# MenuStyle * PopupAsSubmenu, HoldSubmenus, SubmenusRight
+# MenuStyle * ItemFormat "%|%5.5i%1.3l%2.3>%|"
+# MenuStyle * VerticalItemSpacing 1 1, VerticalTitleSpacing 2 2
+# MenuStyle * MenuColorset 7
+# MenuStyle * ActiveFore, Hilight3DOff
+# MenuStyle * ActiveColorset 8
+# MenuStyle * Font "Shadow=2:xft:Sans:Bold:size=11:antialias=True"
+
+
+
+#####
+# Module Colorsets
+###########
+#Colorset 9 fg black, bg grey, Transparent c6cbd6 90
+# Colorset 9 RootTransparent
+Colorset 9 fg rgb:00/00/00, hi rgb:00/00/00, sh rgb:00/00/00, bg rgb:e9/e9/d9
+Colorset 10 fg rgb:00/00/00, hi rgb:dd/00/00, sh rgb:dd/00/00, bg rgb:fb/fc/ec
+
+#####
+# FvwmIdent
+###########
+DestroyModuleConfig FvwmIdent: *
+*FvwmIdent: Colorset 9
+*FvwmIdent: Font "xft:Sans:size=10:antialias=True"
+
+#####
+# FvwmTaskBar
+###########
+Style "FvwmTaskBar" NoTitle, !Handles, !Borders, Sticky, WindowListSkip, \
+  StaysOnBottom, FixedPosition, FixedSize, !Iconifiable
+# CirculateSkip,
+#, !Iconifiable
+
+DestroyModuleConfig FvwmTaskBar: *
+*FvwmTaskBar: Geometry +0-0
+*FvwmTaskBar: Rows 2
+*FvwmTaskBar: Font "xft:Sans:Bold:pixelsize=12:minispace=True:antialias=True"
+*FvwmTaskBar: SelFont "xft:Sans:Bold:pixelsize=12:minispace=True:antialias=True"
+*FvwmTaskBar: StatusFont "xft:Sans:Bold:pixelsize=12:minispace=True:antialias=True"
+*FvwmTaskBar: Colorset 9
+*FvwmTaskBar: IconColorset 9
+*FvwmTaskBar: FocusColorset 9
+*FvwmTaskBar: TipsColorset 9
+*FvwmTaskBar: UseSkipList
+*FvwmTaskBar: UseIconNames
+*FvwmTaskBar: ShowTips
+*FvwmTaskBar: DeskOnly
+*FvwmTaskBar: PageOnly
+# *FvwmTaskBar: StartName FVWM
+# *FvwmTaskBar: StartMenu RootMenu
+# *FvwmTaskBar: Button Title XTerm, Icon mini/xterm.png, Action (Mouse 1) FvwmXTerm
+# *FvwmTaskBar: Action Click3 Menu FvwmWindowOpsMenu
+# *FvwmTaskBar: StartIcon mini/fvwm.png
+
+#####
+# FvwmPager
+###########
+# Style "FvwmPager" NoTitle, !Handles, !Borders, Sticky, WindowListSkip, CirculateSkip, StaysOnTop, FixedSize, !Iconifiable
+Style "FvwmPager" !Handles, !Borders, Sticky, StaysOnTop, FixedSize, !Iconifiable
+
+DestroyModuleConfig SidePager: *
+*SidePager: Geometry 100x350-0+0
+*SidePager: Colorset * 9
+*SidePager: HilightColorset * 10
+*SidePager: BalloonColorset * 9
+*SidePager: WindowColorsets 9 10
+*SidePager: Font "xft:Sans:Bold:pixelsize=12:minspace=True:antialias=True"
+*SidePager: Balloons All
+*SidePager: BalloonFont "xft:Sans:Bold:pixelsize=12:minspace=True:antialias=True"
+*SidePager: BallonYOffset +2
+*SidePager: Window3dBorders
+*SidePager: MiniIcons
+*SidePager: UseSkipList
+*SidePager: Rows 3
+
+#####
+# FvwmButtons is an incredible piece of software.
+#
+# It can create freeform panels of any size, shape (including Non-Rectangular windows),
+# Colour and function. It can swallow other applications, even applications not designed
+# for docking, have "panels" that slide out consisting of other panels, has a "startup-notification"
+# like feature, hundreds of possible bindings, uses the powerful fvwm Colorsets feature, and
+# can even change dynamically and respond to window manager events.
+#
+# The widgets can be transparent, use Xft fonts, and using fvwm's font definitions can render drop shadows
+# at any direction, offset, size and colour. Buttons can all use different Colorsets, and can have different
+# reliefs, shapes, anything!
+#
+# FvwmButtons is even tolerant to errors in configuration, and can workaround bad or impossible
+# definitions!
+#
+# As it's an fvwm module, it has 100% integration with the window manager and can use
+# internal fvwm commands, functions, etc.
+#
+# as you can tell, i am a big FvwmButtons fan :)
+#
+# I've written a quick introduction into making panels with FvwmButtons, you can read it here
+# http://forums.gentoo.org/viewtopic.php?t=162177
+#
+###########
+
+#####
+# MyButtons
+###########
+Style "MyButtons" NoTitle, !Handles, !Borders, Sticky, WindowListSkip, \
+  CirculateSkip, StaysOnBottom, FixedPosition, FixedSize, !Iconifiable
+
+DestroyModuleConfig MyButtons: *
+*MyButtons: Geometry 100x532-0+350
+*MyButtons: Colorset 9
+*MyButtons: Rows 19
+*MyButtons: Columns 1
+*MyButtons: Frame 3
+*MyButtons: Font "Shadow=3:xft:Sans:Bold:pixelsize=14:minspace=True:antialias=True"
+*MyButtons: (1x2, Title(Center) "FVWM")
+*MyButtons: (1x4, Swallow(UseOld, NoClose, NoKill) "stalonetray" 'Exec exec stalonetray -p')
+*MyButtons: (1x3, Swallow (SwallowNew) "Clock Applet" `Exec exec rxvt -bg white -fg black -cr white +sb -geometry 8x4 -T "Clock Applet" -e watch --no-title -n 1 'date +"%T%n%A%n%Y.%b.%d"'`)
+#*MyButtons: (1x3, Swallow(UseOld, NoClose) "dclock" 'Exec exec dclock -dateup -seconds -miltime -nobell -noblink -slope 90.0 -date \"%Y.%b.%d\" -geom 99x68')
+*MyButtons: (1x10, Swallow (SwallowNew) "Testomatic" 'Exec conky -c $[HOME]/.conkyrc2')
+#*MyButtons: (1x5, Swallow wmmon 'Exec wmmon &')
+# *MyButtons: (1x1)
+
+#####
+# MyWinList
+###########
+Style "MyWinList" NoTitle, !Handles, !Borders, Sticky, WindowListSkip, \
+  CirculateSkip, StaysOnBottom, FixedPosition, FixedSize, !Iconifiable
+
+DestroyModuleConfig MyWinList: *
+*MyWinList: Geometry 100x400-0+882
+*MyWinList: UseSkipList
+*MyWinList: MaxWidth 100
+
+############
+# Run Dialog
+############
+
+Style fvwm-run-dialog GrabFocus
+Style my_xtermwindow GrabFocus
+
+###########
+# Move Page
+###########
+
+# Key right A CM GotoPage +1p +0p
+# Key left A CM GotoPage -1p +0p
+# Key down A CM GotoPage +0p +1p
+# Key up A CM GotoPage +0p -1p
+
+# Mouse 1 A CM Scroll reverse 	#Grab and drag pages
+
+# move a window and follow it
+# Key right A CMS MoveAndGotoPage +1p +0p
+# Key left A CMS MoveAndGotoPage -1p +0p
+# Key down A CMS MoveAndGotoPage +0p +1p
+# Key up A CMS MoveAndGotoPage +0p -1p
+
+###########
+# Move Desk
+###########
+
+# Key down A 4 GotoDesk 1
+# Key up A 4 GotoDesk -1
+
+# Key right A 4 GotoDesk 1
+# Key left A 4 GotoDesk -1
+
+# Mouse 4 A 4 GotoDesk -1
+# Mouse 5 A 4 GotoDesk 1
+
+# Key down A C4 MoveAndGotoDesk 1
+# Key up A C4 MoveAndGotoDesk -1
+# Key right A C4 MoveAndGotoDesk 1
+# Key left A C4 MoveAndGotoDesk -1
+
+# Testing out mouse gestures
+# Stroke 7415963    2  R  N  Exec exec iceweasel
+
+#############
+# FvwmBacker
+############
+DestroyFunc RefreshConky
+AddToFunc RefreshConky
++ I All ("Conky") RefreshWindow
+
+DestroyFunc ChangeDesktop
+AddToFunc ChangeDesktop
++ I PipeRead "fvwm-root -r  $0; echo RefreshConky "
+
+DestroyModuleConfig FvwmBacker:*
+*FvwmBacker: RetainPixmap
+*FvwmBacker: Command (Desk 0) ChangeDesktop  $[FVWM_USERDIR]/wallpaper/Image-Disney_Concert_Hall_by_Carol_Highsmith_edit.png
+*FvwmBacker: Command (Desk 1) ChangeDesktop  $[FVWM_USERDIR]/wallpaper/Mt_Herschel_Antarctica_Jan_2006.png
+*FvwmBacker: Command (Desk 2) ChangeDesktop  $[FVWM_USERDIR]/wallpaper/Lower_Antelope_Canyon_478.png
+*FvwmBacker: Command (Desk 3) ChangeDesktop  $[FVWM_USERDIR]/wallpaper/Nature-Colors-Wallpaper-278114.png
+*FvwmBacker: Command (Desk 4) ChangeDesktop  $[FVWM_USERDIR]/wallpaper/salvador.png
+
+#
+#   iceweasel   iceweasel2  banshee
+#
+#
+#    emacs
+#
+#
+#
+#    emacs2    icedove	   pidgin
+#
+
+#Application specific styles.
+#Style Emacs StartsOnPage 0 0 1, SkipMapping
+# Style Icedove-bin StartsOnPage 0 1 2, SkipMapping
+# Style banshee-1 StartsOnPage 0 2 0, SkipMapping
+# Style gaim Title, Handles, BorderWidth 5, HandleWidth 5
+# Style xloadtime !Title, Handles, Sticky
+# Style xbuffy !Title, Sticky
+# Style xlassie !title, Sticky
+# Style "Terminal Emulation"  StartsOnPage 0 0 0, SkipMapping
+# Style xmcd    StartsOnPage 0 0 0, SkipMapping
+# Style rxvt_a  StartsOnPage 0 1 1, SkipMapping
+# Style rxvt_b  StartsOnPage 0 1 1, SkipMapping
+# Style irc     StartsOnPage 0 1 1, SkipMapping
+# Style mutt    StartsOnPage 1 2, SkipMapping
+# Style rxvtc   StartsOnPage 1 2, SkipMapping
+# Style rxvtd   StartsOnPage 1 2, SkipMapping
+# Style Mozilla-bin StartsOnPage 0 1 0, SkipMapping
+# Style *Firefox* StartsOnPage 0 1 0, SkipMapping
+
+# ################################
+# Cycle through windows
+# ################################
+DestroyFunc SelectWindow
+AddToFunc SelectWindow
++ I Focus
++ I Iconify false
++ I Raise
++ I WarpToWindow 50 8p
+
+# Key J A 4 Prev (CurrentPage) SelectWindow
+# Key K A 4 Next (CurrentPage) SelectWindow
+
+#####################
+# FvwmEvent
+##############
+
+DestroyModuleConfig FvwmEvent: *
+*FvwmEvent: deiconify DeThumbnail
+*FvwmEvent: new_desk "SendToModule DeskBar ChangeButton desk Title $$[desk.n]"
+
+# Iconified windows have Titles
+Colorset 14 fg white, bg black, fgsh black, RootTransparent
+Style * IconTitle, IconTitleColorset 14, HilightIconTitleColorset 14, IconTitleRelief 0
+Style * IconFont "xft:Aquafont:size=11minspacing=True", IndexedIconName, IconBackgroundPadding 2,
+Style * IconBackgroundRelief 0, IconBackGroundColorset 14
+
+
+#####
+# Thumbnail
+# For a faster machine use -scale (slow -sample)
+#####
+DestroyFunc Thumbnail
+AddToFunc Thumbnail
++ I Raise
++ I ThisWindow (!Iconic) SetEnv Icon-$[w.id] $[w.iconfile]
++ I ThisWindow (!Shaded, Iconifiable, !Iconic) PipeRead \
+    "xwd -silent -id $[w.id] | convert -scale 128 -frame 1x1 \
+    -mattecolor black -quality 0 xwd:- png:$[FVWM_USERDIR]/icon.tmp.$[w.id].png \
+    && echo WindowStyle IconOverride, Icon $[FVWM_USERDIR]/icon.tmp.$[w.id].png \
+    || echo Nop"
++ I TestRc (Match) Test (f $[w.miniiconfile], f $[FVWM_USERDIR]/icon.tmp.$[w.id].png) PipeRead \
+    "composite -geometry +2+4 $[w.miniiconfile] $[FVWM_USERDIR]/icon.tmp.$[w.id].png \
+    $[FVWM_USERDIR]/icon.tmp.$[w.id].png; echo Nop"
++ I Iconify
+
+DestroyFunc DeThumbnail
+AddToFunc DeThumbnail
++ I PipeRead "echo Test \\(i \\$\\[Icon-$[w.id]\\]\\) WindowStyle Icon \\$\\[Icon-$[w.id]\\]"
++ I TestRc (NoMatch) WindowStyle NoIconOverride, Icon
++ I Exec rm -f $[FVWM_USERDIR]/icon.tmp.$[w.id].png
++ I All (Iconic, CurrentPage) PlaceAgain icon
++ I UnsetEnv Icon-$[w.id]
+
+# Local Variables:
+# mode:conf
+# End:

@@ -1,0 +1,153 @@
+# Originally from either Thomas Adam or Taviso
+# I modified it slightly to work on boundary cases
+
+########################################
+# Pack window up
+########################################
+
+
+#####
+# Name:     PackWindowLeft
+# Bound:    Alt+Shift+Left When a window is active
+# Purpose:  See PackWindowUp.
+#
+# The Logic works likes this:
+#   1. Set Destination to the Left Edge
+#   2. For every window, Run these tests:
+#               + Is the Window's Right edge further _Right_ than furthest edge seen yet?
+#       And:    + Is it's Right edge Further _Left_ than Target Windows Left edge? (ie,
+#in the way)
+#           Yes:
+#                   + Does the window start inside Target Window, and end below?
+#               Or  + Does it start above, and end inside?
+#               Or  + Is it the same vertical position/height/size, or start inside and
+#end inside?
+#               Or  + Does it start above, and end below?
+#                   Yes:
+#                       This is the new Destination.
+#                   No:
+#                       Nop
+#           No:
+#               Nop
+#   3. Move to Destination.
+#
+#################
+
+DestroyFunc PackSetLowW
+AddToFunc PackSetLowW
++ I SetEnv low_w 0
++ I All (CurrentPage,!Iconic,!Shaded) \
+	PipeRead "test `expr $[w.y] + $[w.height]` -gt $low_w \
+        -a `expr $[w.y] + $[w.height]` -lt $0 \
+        -a \\( \\( $[w.x] -ge $1 -a $[w.x] -lt `expr $1 + $2` \\) \
+            -o \\( $1 -ge $[w.x] -a $1 -lt `expr $[w.x] + $[w.width]` \\) \
+            -o \\( $1 -le $[w.x] -a `expr $1 + $2` -ge `expr $[w.x] + $[w.width]` \\) \
+            -o \\( $[w.x] -le $1 -a `expr $[w.x] + $[w.width]` -ge `expr $1 + $2` \\) \
+        \\) \
+        && echo SetEnv low_w `expr $[w.y] + $[w.height]` \
+        || echo Nop"
+
+
+DestroyFunc PackSetHighW
+AddToFunc PackSetHighW
++ I SetEnv high_w $[vp.height]
++ I All (CurrentPage,!Iconic,AcceptsFocus,!Shaded) \
+	PipeRead "test $[w.y] -lt $high_w \
+        -a $[w.y] -gt `expr $0 + $4`  \
+        -a \\( \\( $[w.x] -ge $1 -a $[w.x] -lt `expr $1 + $2` \\) \
+            -o \\( $1 -ge $[w.x] -a $1 -lt `expr $[w.x] + $[w.width]` \\) \
+            -o \\( $1 -le $[w.x] -a `expr $1 + $2` -ge `expr $[w.x] + $[w.width]` \\) \
+            -o \\( $[w.x] -le $1 -a `expr $[w.x] + $[w.width]` -ge `expr $1 + $2` \\) \
+        \\) \
+        && echo SetEnv high_w $[w.y] \
+        || echo Nop"
+
+
+DestroyFunc PackSetLeftW
+AddToFunc PackSetLeftW
++ I SetEnv left_w 0
++ I All (CurrentPage,!Iconic,AcceptsFocus,!Shaded) \
+	PipeRead "test `expr $[w.x] + $[w.width]` -gt ${left_w} \
+        -a `expr $[w.x] + $[w.width]` -lt $1 \
+        -a \\( \\( $[w.y] -ge $0 -a $[w.y] -lt `expr $0 + $4` \\) \
+            -o \\( $[w.y] -le $0 -a `expr $[w.y] + $[w.height]` -gt $0 \\) \
+            -o \\( $[w.y] -ge $0 -a `expr $[w.y] + $[w.height]` -le `expr $0 + $4` \\) \
+            -o \\( $[w.y] -le $0 -a `expr $[w.y] + $[w.height]` -ge `expr $0 + $4` \\) \
+        \\) \
+        && echo SetEnv left_w `expr $[w.x] + $[w.width]`  \
+        || echo Nop"
+
+DestroyFunc PackSetRightW
+AddToFunc PackSetRightW
++ I SetEnv right_w $[vp.width]
++ I All (CurrentPage,!Iconic,!Shaded) \
+	PipeRead "test $[w.x] -lt ${right_w} \
+        -a $[w.x] -gt `expr $1 + $2` \
+        -a \\( \\( $[w.y] -ge $0 -a $[w.y] -lt `expr $0 + $4` \\) \
+            -o \\( $[w.y] -le $0 -a `expr $[w.y] + $[w.height]` -gt $0 \\) \
+            -o \\( $[w.y] -ge $0 -a `expr $[w.y] + $[w.height]` -le `expr $0 + $4` \\) \
+            -o \\( $[w.y] -le $0 -a `expr $[w.y] + $[w.height]` -ge `expr $0 + $4` \\) \
+        \\) \
+        && echo SetEnv right_w $[w.x] \
+        || echo Nop"
+
+
+DestroyFunc PackWindowDown
+AddToFunc PackWindowDown
++ I WindowId $3 Raise
++ I PackSetHighW $0 $1 $2 $3 $4
++ I PipeRead "echo WindowId $3 AnimatedMove keep `expr $[high_w] - $4`p"
++ I WindowId $3 WarpToWindow 50 50
+#+ I WindowId $3 RefreshWindow
+
+
+DestroyFunc PackWindowUp
+AddToFunc PackWindowUp
++ I WindowId $3 Raise
++ I PackSetLowW $0 $1 $2 $3 $4
++ I WindowId $3 AnimatedMove keep $[low_w]p
++ I WindowId $3 WarpToWindow 50 50
+#+ I WindowId $3 RefreshWindow
+
+
+DestroyFunc PackWindowLeft
+AddToFunc PackWindowLeft
++ I WindowId $3 Raise
++ I PackSetLeftW $0 $1 $2 $3 $4
++ I WindowId $3 AnimatedMove $[left_w]p keep
++ I WindowId $3 WarpToWindow 50 50
+#+ I WindowId $3 RefreshWindow
+
+
+DestroyFunc PackWindowRight
+AddToFunc PackWindowRight
++ I WindowId $3 Raise
++ I PackSetRightW $0 $1 $2 $3 $4
++ I PipeRead "echo WindowId $3 AnimatedMove `expr ${right_w} - $2`p keep"
++ I WindowId $3 WarpToWindow 50 50
+#+ I WindowId $3 RefreshWindow
+
+DestroyFunc PackWrapperRight
+AddToFunc PackWrapperRight I NoWindow PackWindowRight $[w.y] $[w.x] $[w.width] $[w.id] $[w.height]
+
+DestroyFunc  PackWrapperLeft
+AddToFunc PackWrapperLeft I NoWindow PackWindowLeft $[w.y] $[w.x] $[w.width] $[w.id] $[w.height]
+
+DestroyFunc  PackWrapperDown
+AddToFunc PackWrapperDown I NoWindow PackWindowDown $[w.y] $[w.x] $[w.width] $[w.id] $[w.height]
+
+
+DestroyFunc PackWrapperUp
+AddToFunc PackWrapperUp
++ I NoWindow PackWindowUp $[w.y] $[w.x] $[w.width] $[w.id]
+
+Key Up      WTSF    CS  PackWrapperUp
+Key Down      WTSF    CS  PackWrapperDown
+Key Left      WTSF    CS  PackWrapperLeft
+Key Right      WTSF    CS  PackWrapperRight
+
+
+
+# Local Variables:
+# mode:conf
+# End:

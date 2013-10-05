@@ -1,0 +1,63 @@
+########################################
+# ResizePack window up
+########################################
+
+DestroyFunc ResizePackWindowUp
+AddToFunc ResizePackWindowUp
++ I WindowId $3 Raise
++ I PackSetLowW $0 $1 $2 $3 $4
++ I WindowId $3 (!Maximizable) Nop
++ I TestRc (Match) WindowId $3 Maximize
++ I TestRc (NoMatch) WindowId $3 PipeRead "echo Resize keep `expr $[w.y] + $[cw.height] - ${low_w}`p; echo AnimatedMove keep ${low_w}p"
+#+ I WindowId $3 RefreshWindow
+
+DestroyFunc ResizePackWindowDown
+AddToFunc ResizePackWindowDown
++ I WindowId $3 Raise
++ I PackSetHighW $0 $1 $2 $3 $4
++ I WindowId $3 (!Maximizable) Nop
++ I TestRc (Match) WindowId $3 Maximize
++ I TestRc (NoMatch) WindowId $3 PipeRead "echo Resize keep `expr ${high_w} - $[cw.y]`p"
+#+ I WindowId $3 RefreshWindow
+
+DestroyFunc ResizePackWindowLeft
+AddToFunc ResizePackWindowLeft
++ I WindowId $3 Raise
++ I PackSetLeftW $0 $1 $2 $3 $4
++ I WindowId $3 (!Maximizable) Nop
++ I TestRc (Match) WindowId $3 Maximize
++ I TestRc (NoMatch) WindowId $3 PipeRead "echo Resize `expr $[w.x] + $[w.width] - ${left_w}`p keep; echo AnimatedMove ${left_w}p keep"
+# + I WindowId $3 Resize $[left_w]p keep
+#+ I WindowId $3 RefreshWindow
+
+DestroyFunc ResizePackWindowRight
+AddToFunc ResizePackWindowRight
++ I WindowId $3 Raise
++ I PackSetRightW $0 $1 $2 $3 $4
++ I WindowId $3 (!Maximizable) Nop
++ I TestRc (Match) WindowId $3 Maximize
++ I TestRc (NoMatch) WindowId $3 PipeRead "echo Resize `expr ${right_w} - $[w.x]`p keep"
+#+ I WindowId $3 RefreshWindow
+
+DestroyFunc  ResizePackWrapperLeft
+AddToFunc ResizePackWrapperLeft I NoWindow ResizePackWindowLeft $[w.y] $[w.x] $[w.width] $[w.id] $[w.height]
+
+DestroyFunc  ResizePackWrapperDown
+AddToFunc ResizePackWrapperDown I NoWindow ResizePackWindowDown $[w.y] $[w.x] $[w.width] $[w.id] $[w.height]
+
+DestroyFunc ResizePackWrapperRight
+AddToFunc ResizePackWrapperRight I NoWindow ResizePackWindowRight $[w.y] $[w.x] $[w.width] $[w.id] $[w.height]
+
+DestroyFunc ResizePackWrapperUp
+AddToFunc ResizePackWrapperUp
++ I NoWindow ResizePackWindowUp $[w.y] $[w.x] $[w.width] $[w.id]
+
+Key Up      WTSF    CM  ResizePackWrapperUp
+Key Down      WTSF    CM  ResizePackWrapperDown
+Key Left      WTSF    CM  ResizePackWrapperLeft
+Key Right      WTSF    CM  ResizePackWrapperRight
+
+
+# Local Variables:
+# mode:conf
+# End:

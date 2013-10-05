@@ -1,0 +1,164 @@
+# MoveHereOrMoveBack WindowTitle Exec Desk PageX PageY
+
+# DestroyFunc MoveHereOrMoveBack
+# AddToFunc MoveHereOrMoveBack
+# + I Next ($0) Nop
+# + I TestRc (NoMatch) Exec exec $1
+# + I Next (CurrentPage, Focused, $0) ShadeMoveDeskPage 0 $2 $3 $4
+# + I TestRc (NoMatch) Next (CurrentPage, Raised, $0) ShadeMoveDeskPage 0 $2 $3 $4
+# + I TestRc (NoMatch) Next ($0) ShadeMoveDeskPage
+
+# DestroyFunc MoveHereOrMoveBack
+# AddToFunc MoveHereOrMoveBack
+# + I Next ($0) Nop
+# + I TestRc (NoMatch) Exec exec $1
+# + I Next ($0, CurrentPage, Raised) All ($0, CurrentPage) ShadeMoveDeskPage 0 $2 $3 $4
+# + I TestRc (NoMatch) Next ($0, CurrentPage, Raised) All ($0, CurrentPage) ShadeMoveDeskPage 0 $2 $3 $4
+# + I TestRc (NoMatch) All ($0) ShadeMoveDeskPage
+
+DestroyFunc SimpleHide
+AddToFunc SimpleHide
++ I Focus
++ I WindowFunnyFunc-$[w.id]
++ I WindowId $[w.id] (CurrentPage) HideByClass-$[w.class]
++ I WindowId $[w.id] (CurrentPage) HideByClass-$[w.name]
+
+DestroyFunc MoveHereOrMoveBack
+AddToFunc MoveHereOrMoveBack
++ I Next ($0) Nop
++ I TestRc (NoMatch) Exec exec $1
++ I Next ($0, CurrentPage, Raised) All ($0, CurrentPage) SimpleHide
++ I TestRc (NoMatch) All ($0) ShadeMoveDeskPage
+
+DestroyFunc RememberMouse1
+AddToFunc RememberMouse1
++ I PipeRead "[ $0 -eq $[pointer.x] -a $1 -eq $[pointer.y] ] && echo RememberMouse2"
+
+# Destroyfunc WeirdSelectWindow
+# AddToFunc WeirdSelectWindow
+# + I DestroyFunc RememberMouse2
+# + I PipeRead "echo AddToFunc RememberMouse2 I WindowId root 1 WarpToWindow $[pointer.x]p $[pointer.y]p"
+# + I Raise
+# + I WarpToWindow 50 50
+# + I DestroyFunc RememberMousePosition
+# + I PipeRead "echo AddToFunc RememberMousePosition I RememberMouse1 $[pointer.x] $[pointer.y]"
+# l
+# DestroyFunc WeirdUnSelectWindow
+# AddToFunc WeirdUnSelectWindow
+# + I RememberMousePosition
+# + I Lower
+
+
+Destroyfunc WeirdSelectWindow
+AddToFunc WeirdSelectWindow
++ I Raise
++ I Focus
+
+DestroyFunc WeirdUnSelectWindow
+AddToFunc WeirdUnSelectWindow
++ I Lower
++ I KeepRc Next (HasPointer) Focus
+
+# ShadeMoveDeskPage 0 Desk PageX PageY
+DestroyFunc ShadeMoveDeskPage
+AddToFunc ShadeMoveDeskPage
++ I WindowShade true E
++ I MoveToDesk $0 $1
++ I MoveToPage $2 $3
+# Lower it if we want to move it away
++ I WindowShade False
++ I PipeRead "test -n \"$0\" && echo WeirdUnSelectWindow || echo WeirdSelectWindow"
+
+# Quick Access Windows
+DestroyFunc MakeWeirdFunc
+AddToFunc MakeWeirdFunc
++ I DestroyFunc WindowFunnyFunc-$[w.id]
++ I Current AddToFunc WindowFunnyFunc-$[w.id] I WindowId $[w.id] (CurrentPage, Focused) ShadeMoveDeskPage 0 $1 $2 $3
++ I Current AddToFunc WindowFunnyFunc-$[w.id] I TestRc (NoMatch) WindowId $[w.id] (CurrentPage, Raised) ShadeMoveDeskPage 0 $1 $2 $3
++ I Current AddToFunc WindowFunnyFunc-$[w.id] I TestRc (NoMatch) WindowId $[w.id] ShadeMoveDeskPage
++ I Current DestroyFunc FunnyFunc-$0
++ I Current AddToFunc FunnyFunc-$0 I WindowFunnyFunc-$[w.id]
+# + I Key $0 A 4 FunnyFunc-$0
+
+DestroyFunc MakeLocalWeirdFunc
+AddToFunc MakeLocalWeirdFunc
++ I MakeWeirdFunc $0 $[desk.n] $[page.nx] $[page.ny]
+
+DestroyFunc MakeJunkWeirdFunc
+AddToFunc MakeJunkWeirdFunc
++ I MakeWeirdFunc $0 4 $[page.nx] $[page.ny]
+
+DestroyFunc WeirdHide
+AddToFunc WeirdHide
++ I DestroyFunc WeirdUnHide
++ I Current AddToFunc WeirdUnHide I WindowId $[w.id] ShadeMoveDeskPage
++ I Current WindowFunnyFunc-$[w.id]
++ I WindowId $[w.id] (CurrentPage, Focused) HideByClass-$[w.class]
++ I TestRc (NoMatch) WindowId $[w.id] (CurrentPage, Raised) HideByClass-$[w.class]
++ I WindowId $[w.id] (CurrentPage, Focused) HideByClass-$[w.name]
++ I TestRc (NoMatch) WindowId $[w.id] (CurrentPage, Raised) HideByClass-$[w.name]
++ I WindowId $[w.id] (CurrentPage, Focused) Popup JunkifyOrIconifyMenu
++ I TestRc (NoMatch) WindowId $[w.id] (CurrentPage, Raised) Popup JunkifyOrIconifyMenu
+
+PipeRead "for count in `seq 0 9`; \
+    do echo \"Key $count A C4 MakeLocalWeirdFunc $count\";\
+    echo \"Key $count A S4 MakeJunkWeirdFunc $count\";\
+    echo \"Key $count A 4 FunnyFunc-$count\"; done"
+
+Key 0 A CS4 DestroyFunc WindowFunnyFunc-$[w.id]
+
+# Key 1 A C4 MakeLocalWeirdFunc 1
+# Key 2 A C4 MakeLocalWeirdFunc 2
+# Key 3 A C4 MakeLocalWeirdFunc 3
+# Key 4 A C4 MakeLocalWeirdFunc 4
+# Key 5 A C4 MakeLocalWeirdFunc 5
+
+# Key 1 A S4 MakeJunkWeirdFunc 1
+# Key 2 A S4 MakeJunkWeirdFunc 2
+# Key 3 A S4 MakeJunkWeirdFunc 3
+# Key 4 A S4 MakeJunkWeirdFunc 4
+# Key 5 A S4 MakeJunkWeirdFunc 5
+
+# Key 1 A 4 FunnyFunc-1
+# Key 2 A 4 FunnyFunc-2
+# Key 3 A 4 FunnyFunc-3
+# Key 4 A 4 FunnyFunc-4
+# Key 5 A 4 FunnyFunc-5
+
+Key H A 4 WeirdHide
+Key H A C4 WeirdUnHide
+# Key H A SC4 Current DestroyFunc WindowFunnyFunc-$[w.id]
+
+# DestroyFunc PopBack
+# AddToFunc PopBack
+# + I Key H A 4 PopBack $[desk.n] $[page.nx] $[page.ny]
+# + I GotoDeskAndPage $0 $1 $2
+
+# DestroyFunc  EWMHActivateWindowFunc
+# AddToFunc    EWMHActivateWindowFunc
+# + I ThisWindow (CurrentPage) Break
+# + I Key H A 4 PopBack $[desk.n] $[page.nx] $[page.ny]
+# + I Iconify off
+# + I Raise
+# + I FlipFocus
+
+DestroyFunc ActivateTwo
+AddToFunc ActivateTwo
++ I FlipFocus
++ I MakeWeirdFunc H
++ I GotoDeskAndPage $0 $1 $2
++ I FunnyFunc-H
+
+DestroyFunc  EWMHActivateWindowFunc
+AddToFunc    EWMHActivateWindowFunc
++ I Iconify off
++ I Raise
++ I MoveToDesk
++ I MoveToPage
++ I FlipFocus
+# + I ThisWindow (CurrentPage) Break
+# + I ThisWindow ActivateTwo $[desk.n] $[page.nx] $[page.ny]
+
+# Local Variables:
+# mode:conf
+# End:

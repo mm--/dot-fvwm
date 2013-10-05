@@ -1,0 +1,98 @@
+DestroyFunc GoRight
+AddToFunc GoRight
+   + I PipeRead "test `expr $[desk.pagesx] - 1` = $[page.nx]  && echo GotoDeskAndPage `expr $[desk.n] + 1` 0 $[page.ny] || echo Scroll 100 0"
+
+DestroyFunc GoLeft
+AddToFunc GoLeft
+   + I PipeRead "test 0 = $[page.nx]  && echo GotoDeskAndPage `expr $[desk.n] - 1`  `expr $[desk.pagesx] - 1` $[page.ny] || echo Scroll -100 0"
+
+DestroyFunc MoveAndGotoRight
+AddToFunc MoveAndGotoRight
+   + I Raise
+   + I PipeRead "test `expr $[desk.pagesx] - 1` = $[page.nx] \
+       		 && echo MoveToDesk 1  \
+		 && echo MoveToPage 0 0p\
+       		 && echo GotoDesk 1  \
+		 && echo GotoPage 0 0p || echo MoveAndGotoPage +1p +0p"
+
+DestroyFunc MoveAndGotoLeft
+AddToFunc MoveAndGotoLeft
+   + I Raise
+   + I PipeRead "test 0 = $[page.nx] \
+       		 && echo MoveToDesk -1  \
+		 && echo MoveToPage `expr $[desk.pagesx] - 1` 0p\
+       		 && echo GotoDesk -1  \
+		 && echo GotoPage `expr $[desk.pagesx] - 1` 0p || echo MoveAndGotoPage -1p +0p"
+
+DestroyFunc MoveRight
+AddToFunc MoveRight
+   + I Raise
+   + I PipeRead "test `expr $[desk.pagesx] - 1` = $[page.nx] \
+       		 && echo MoveToDesk 1  \
+		 && echo MoveToPage 0 0p\
+		 || echo MoveToPage +1p +0p"
+
+DestroyFunc MoveLeft
+AddToFunc MoveLeft
+   + I Raise
+   + I PipeRead "test 0 = $[page.nx] \
+       		 && echo MoveToDesk -1  \
+		 && echo MoveToPage `expr $[desk.pagesx] - 1` 0p\
+		 || echo MoveToPage -1p +0p"
+
+DestroyFunc MoveAndGotoPage
+AddToFunc MoveAndGotoPage
+   + I MoveToPage $*
+   + I GotoPage $*
+
+DestroyFunc MoveAndGotoDesk
+AddToFunc MoveAndGotoDesk
+   + I Raise
+   + I MoveToDesk $*
+   + I GotoDesk $*
+
+DestroyFunc WeirdScrollRight
+AddToFunc WeirdScrollRight
++ I PipeRead "for i in `seq 20`; do echo Scroll 5 0; sleep 0.01; done"
++ I PipeRead "echo Scroll `echo \"$[vp.width] - ($[vp.width] / 20 * 20)\" | bc`p 0"
+
+DestroyFunc WeirdScrollLeft
+AddToFunc WeirdScrollLeft
++ I PipeRead "for i in `seq 20`; do echo Scroll -5 0; sleep 0.01; done"
++ I PipeRead "echo Scroll -`echo \"$[vp.width] - ($[vp.width] / 20 * 20)\" | bc`p 0"
+
+DestroyFunc WeirdScrollDown
+AddToFunc WeirdScrollDown
++ I PipeRead "for i in `seq 20`; do echo Scroll 0 5; sleep 0.01; done"
++ I PipeRead "echo Scroll 0 `echo \"$[vp.height] - ($[vp.height] / 20 * 20)\" | bc`p"
+
+DestroyFunc WeirdScrollUp
+AddToFunc WeirdScrollUp
++ I PipeRead "for i in `seq 20`; do echo Scroll 0 -5; sleep 0.01; done"
++ I PipeRead "echo Scroll 0 -`echo \"$[vp.height] - ($[vp.height] / 20 * 20)\" | bc`p"
+
+
+Key Up A S4 WeirdScrollUp
+Key Down A S4 WeirdScrollDown
+Key Left A S4 WeirdScrollLeft
+Key Right A S4 WeirdScrollRight
+
+
+Key right A C4 MoveAndGotoRight
+Key left A C4 MoveAndGotoLeft
+Key down A C4 MoveAndGotoPage +0p +1p
+Key up A C4 MoveAndGotoPage +0p -1p
+
+Key right A CS4 MoveRight
+Key left A CS4 MoveLeft
+Key down A CS4 MoveToPage +0p +1p
+Key up A CS4 MoveToPage +0p -1p
+
+Key down A 4 Scroll 0 100
+Key up A 4 Scroll 0 -100
+Key right A 4 GoRight
+Key left A 4 GoLeft
+
+# Local Variables:
+# mode:conf
+# End:

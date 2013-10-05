@@ -1,0 +1,22 @@
+DestroyFunc SpeakTest
+AddToFunc SpeakTest
+ + I Exec pgrep espeak && pkill espeak || xclip -o | espeak -a 200 -v english-us -s $0
+
+DestroyMenu SpeakMenu
+AddToMenu SpeakMenu "Speak at Speed" Title
++ "&1 - 100 WPM" SpeakTest 100
++ "&2 - 200 WPM" SpeakTest 200
++ "&3 - 250 WPM" SpeakTest 250
++ "&4 - 300 WPM" SpeakTest 300
++ "&5 - 350 WPM" SpeakTest 350
++ "Fast Spea&k"  SpeakTest 390
++ "Pa&use"  	 Exec pkill -sigstop espeak
++ "Cont&inue"  	 Exec pkill -sigcont espeak
+
+Key K A 4 Popup SpeakMenu
+Key K A C4 SpeakTest 390
+
+
+# Local Variables:
+# mode:conf
+# End:

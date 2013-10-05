@@ -1,0 +1,45 @@
+#####
+# DeskBar
+#####
+
+Style DeskBar     NoTitle, WindowListSkip, Sticky, !Iconifiable
+Style SubPanel    NoTitle, WindowListSkip, Sticky, StaysOnTop, !Iconifiable
+
+DestroyModuleConfig BarPager: *
+*BarPager: Window3dBorders
+*BarPager: MiniIcons
+*BarPager: UseSkipList
+
+DestroyModuleConfig DeskBar: *
+*DeskBar: Geometry 100x200-0+0
+*DeskBar: Columns 2
+*DeskBar: Rows 7
+*DeskBar: Frame 1
+*DeskBar: Padding 1 1
+*DeskBar: Font "xft:snap;-artwiz-snap-*-r-*-*-*-*-*-*-*-*-iso8859-2"
+*DeskBar: (3x3, Swallow(Kill, SwallowNew, Respawn) "FvwmPager" "Module FvwmPager BarPager *" )
+*DeskBar: (1x1, Id left, Title "<", Action(Mouse 1) GotoDesk -1, Action(Mouse 3) EdgeToggle)
+*DeskBar: (1x1, Id desk, Title "$[desk.n]", Action(Mouse 3) EdgePanelOn, Panel(down, delay 0, steps 30, position root left 0 0) SubPanel "Module FvwmButtons SubPanel")
+*DeskBar: (1x1, Id right, Title ">", Action(Mouse 1) GotoDesk 1, Action(Mouse 3) EdgeToggle)
+*DeskBar: (3x1, Frame 0, Swallow(NoClose, UseOld, Respawn) stalonetray 'Exec exec stalonetray -p --no-shrink --icon-gravity SW --grow-gravity E --window-strut none --window-type normal &> ~/stalonetrayerrors')
+# *DeskBar: (Id weird, 1x1, Frame 0, Panel(down, delay 0, steps 30, position root left 0 0) SubPanel "Module FvwmButtons SubPanel")
+# *DeskBar: (2x1, Swallow(SwallowNew, UseOld) "mplayerweird" 'Exec exec mplayer -title mplayerweird ~/video/mv/Nito*')
+
+
+DestroyModuleConfig SubPanel: *
+PipeRead "echo *SubPanel: Geometry \$(($[vp.width]-105))x350"
+# *SubPanel: Geometry 1295x350
+*SubPanel: Rows 2
+*SubPanel: Columns 2
+*SubPanel: (1x2, Swallow(UseOld,NoHints,Respawn) "quaketerm" `Exec exec xterm -title quaketerm`)
+*SubPanel: (1x1, Swallow(UseOld,NoHints,Respawn) "quakesyslog" `Exec exec xterm -title quakesyslog -geometry 500x500 -e "tail --follow=name /var/log/syslog"`)
+*SubPanel: (1x1, Swallow(UseOld,NoHints,Respawn) "quakeauth" `Exec exec xterm -title quakeauth -geometry 500x500 -e "tail --follow=name /var/log/auth.log"`)
+
+Key f12 A 4 SendToModule DeskBar PressButton desk
+
+Key A A 4 Module FvwmButtons DeskBar
+Key S A 4 Read $[fvwm_config_path]/the-bar
+
+# Local Variables:
+# mode:conf
+# End:

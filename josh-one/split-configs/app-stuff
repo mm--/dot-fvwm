@@ -1,0 +1,64 @@
+#####
+# MoveHereOrBackMenu
+###########
+
+DestroyFunc BuildMoveHereOrBackMenu
+AddToFunc BuildMoveHereOrBackMenu
++ I DestroyMenu MoveHereOrBackMenu
++ I AddToMenu MoveHereOrBackMenu "View" Title
++ I PipeRead "sed '/^#/d;s/\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\)/AddToMenu MoveHereOrBackMenu \\1 MoveHereOrMoveBack \\2 \\3 \\4 \\5 \\6/' < $./application-specific.txt"
++ I MakeHideByClass FvwmConsole 4 0 0
++ I AddToMenu MoveHereOrBackMenu "Fvwm&Console" MoveFvwmConsoleHereOrBack
++ I AddToMenu MoveHereOrBackMenu "&Emacs" Popup ViewEmacs
++ I AddToMenu MoveHereOrBackMenu "X&term" Popup ViewXterm
++ I DestroyMenu ViewXterm
++ I AddToMenu ViewXterm "Xterm" Title
++ I PipeRead "sed '/^#/d;s/\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\)/AddToMenu ViewXterm \\1 MoveHereOrMoveBack \\2 \\3 \\4 \\5 \\6/' < $./xterm-specific.txt"
++ I PipeRead "sed '/^#/d;s/\\(.*\\):\\\"\\(.*\\)\\\":\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\)/MakeHideByClass \\2 \\4 \\5 \\6/' $./xterm-specific.txt"
+
+# MakeHideByClass \\2 \\4 \\5 \\6
+DestroyFunc MakeHideByClass
+AddToFunc MakeHideByClass
++ I DestroyFunc HideByClass-$0
++ I AddToFunc 	HideByClass-$0 I ShadeMoveDeskPage 0 $1 $2 $3
++ I AddToFunc	HideByClass-$0 I MakeWeirdFunc 0 $1 $2 $3
+
+DestroyFunc MoveFvwmConsoleHereOrBack
+AddToFunc   MoveFvwmConsoleHereOrBack
++ I Next (FvwmConsole) Nop
++ I TestRc (NoMatch) FvwmConsole -terminal xterm
++ I MoveHereOrMoveBack FvwmConsole "" 4 0 0
+
+
+DestroyFunc BuildClassHiders
+AddToFunc BuildClassHiders
+# + I PipeRead "sed '/^#/d;s/\\(.*\\):\\\"\\(.*\\)\\\":\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\)/DestroyFunc HideByClass-\\2\\nAddToFunc HideByClass-\\2 I ShadeMoveDeskPage 0 \\4 \\5 \\6/' $./application-specific.txt"
++ I PipeRead "sed '/^#/d;s/\\(.*\\):\\\"\\(.*\\)\\\":\\(.*\\):\\(.*\\):\\(.*\\):\\(.*\\)/MakeHideByClass \\2 \\4 \\5 \\6/' $./application-specific.txt"
+
+##############################
+# Emacs stuff
+##############################
+
+DestroyFunc BuildEmacsMenu
+AddToFunc   BuildEmacsMenu
++ I DestroyMenu ViewEmacs
++ I AddToMenu ViewEmacs "View Emacs" Title
++ I AddToMenu ViewEmacs "&Emacs" MoveHereOrMoveBack "emacs" "emacs -mm" 0 0 0
++ I AddToMenu ViewEmacs "&SetEmacs" Popup SetEmacs
++ I DestroyMenu SetEmacs
++ I AddToMenu SetEmacs "Set Emacs" Title
++ I PipeRead "sed '/^#/d;s/\\(.*\\):\\(.*\\)/AddToMenu SetEmacs \\1 MakeJunkWeirdFunc emacs\\2/' < $./emacs-specific.txt"
++ I PipeRead "sed '/^#/d;s/\\(.*\\):\\(.*\\)/AddToMenu ViewEmacs \\1 FunnyFunc-emacs\\2/' < $./emacs-specific.txt"
+
+
+BuildEmacsMenu
+
+##############################
+
+
+BuildClassHiders
+BuildMoveHereOrBackMenu
+
+# Local Variables:
+# mode:conf
+# End:

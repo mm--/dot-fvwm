@@ -1,0 +1,15 @@
+DestroyFunc FvwmIncreaseTransparency
+AddToFunc   FvwmIncreaseTransparency
++ I Exec exec transset-df -p --inc 0.1
+
+
+DestroyFunc FvwmDecreaseTransparency
+AddToFunc   FvwmDecreaseTransparency
++ I Exec exec transset-df -p --dec 0.1
+
+Mouse 4 W 4 FvwmIncreaseTransparency
+Mouse 5 W 4 FvwmDecreaseTransparency
+
+# Local Variables:
+# mode:conf
+# End:

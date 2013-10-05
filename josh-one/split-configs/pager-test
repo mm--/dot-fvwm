@@ -1,0 +1,68 @@
+Style "*" Font "xft:courier:normal:size=8:minspace=False:antialias=True"
+
+#####
+# DesktopControl, small control panel for switching desks
+#####
+DestroyModuleConfig DeskControl: *
+*DeskControl: Columns 1
+*DeskControl: Rows 3
+*DeskControl: Colorset 17
+*DeskControl: Frame 1
+*DeskControl: Padding 1 1
+*DeskControl: Font "xft:snap;-artwiz-snap-*-r-*-*-*-*-*-*-*-*-iso8859-2"
+*DeskControl: (1x1, Title "<", Action(Mouse 1) GotoDesk -1)
+*DeskControl: (1x1, Title ">", Action(Mouse 1) GotoDesk 1)
+*DeskControl: (1x1, Id desk, Title "$[desk.n]", ActiveTitle "?", Action(Mouse 1) `Next (CirculateHit, DeskControl) PipeRead 'echo LockingSlide keep $$(test $[w.y] -lt 0 && echo 0 || echo w-$$(($[w.height]-$height))p)'`)
+
+
+#####
+# FvwmPager
+###########
+# Style "PagerOne" NoTitle, !Handles, !Borders, Sticky, WindowListSkip, CirculateSkip, StaysOnBottom, FixedSize, !Iconifiable
+
+DestroyModuleConfig PagerOne: *
+*PagerOne: Geometry 100x100+300+300
+*PagerOne: Colorset * 9
+*PagerOne: HilightColorset * 10
+*PagerOne: BalloonColorset * 10
+*PagerOne: WindowColorsets 10 10
+*PagerOne: Font "xft:Sans:Bold:pixelsize=12:minspace=True:antialias=True"
+*PagerOne: Balloons All
+*PagerOne: BalloonFont "xft:Sans:Bold:pixelsize=12:minspace=True:antialias=True"
+*PagerOne: BallonYOffset +2
+*PagerOne: Window3dBorders
+*PagerOne: MiniIcons
+*PagerOne: UseSkipList
+# *PagerOne: Rows 3
+	   
+Module FvwmPager PagerOne *
+
+
+#####
+# FvwmPager
+#####
+Colorset 4 fg white, bg #a4a499
+Colorset 5 fg white, bg #bcbcaf
+Colorset 6 fg #63656e, bg #e4e2d4
+Colorset 7 fg #38362e, bg #e4e2d4, Plain
+Colorset 8 fg white, bg #e4e2d4
+DestroyModuleConfig FvwmPager: *
+*FvwmPager: Colorset * 5
+*FvwmPager: HilightColorset * 8
+*FvwmPager: WindowColorsets 6 4
+*FvwmPager: BalloonColorset * 7
+*FvwmPager: Font none
+*FvwmPager: SmallFont none
+*FvwmPager: Balloons All
+*FvwmPager: BalloonFont "xft:Liberation Sans:size=7:antialias=True:encoding=iso10646-1"
+*FvwmPager: BalloonYOffset +2
+*FvwmPager: BalloonBorderWidth 1
+*FvwmPager: UseSkipList
+*FvwmPager: MoveThreshold 0
+*FvwmPager: SolidSeparators
+*FvwmPager: WindowBorderWidth 1
+#*FvwmPager: MiniIcons
+
+# Local Variables:
+# mode:conf
+# End:

@@ -1,0 +1,185 @@
+
+# DestroyMenu MoveHereOrBackMenu
+# AddToMenu MoveHereOrBackMenu "View" Title
+#  + "&Emacs"     MoveHereOrMoveBack "emacs" "emacs" 0 1 0
+#  + "&Last FM"   MoveHereOrMoveBack "last.fm" "lastfm" 1 1 0
+#  + "&Iceweasel" MoveHereOrMoveBack "Iceweasel" "iceweasel" 2 0 0
+#  + "&Mail"   	MoveHereOrMoveBack "Icedove-bin" "icedove" 1 0 1
+#  + "&Pidgin"    MoveHereOrMoveBack "Pidgin" "pidgin" 1 1 1
+#  + "&Gimp"    	MoveHereOrMoveBack "Gimp" "gimp" 1 0 0
+
+# DestroyFunc HideByClass-Last.fm
+# AddToFunc HideByClass-Last.fm I MoveHereOrMoveBack "last.fm" "lastfm" 1 1 0
+
+# DestroyFunc HideByClass-Icedove-bin
+# AddToFunc HideByClass-Icedove-bin I MoveHereOrMoveBack "Icedove-bin" "icedove" 1 0 1
+
+# DestroyFunc HideByClass-Pidgin
+# AddToFunc HideByClass-Pidgin I MoveHereOrMoveBack "Pidgin" "pidgin" 1 1 1
+
+DestroyMenu MakeJunkFuncMenu
+AddToMenu MakeJunkFuncMenu "Make Junk Window" Title
++ "&1" MakeWeirdFunc 1 4 $[page.nx] $[page.ny]
++ "&2" MakeWeirdFunc 2 4 $[page.nx] $[page.ny]
++ "&3" MakeWeirdFunc 3 4 $[page.nx] $[page.ny]
++ "&4" MakeWeirdFunc 4 4 $[page.nx] $[page.ny]
++ "&5" MakeWeirdFunc 5 4 $[page.nx] $[page.ny]
+
+DestroyMenu KeyboardMenu
+AddToMenu KeyboardMenu "Keyboard Menu" Title
+ + "&US" Exec exec setxkbmap us
+ + "&Dvorak" Exec exec setxkbmap dvorak
+
+Key K A 4 Menu KeyboardMenu
+Key E A 4 Menu EdgeMenu
+Key Q A 4 Menu MoveHereOrBackMenu
+Key M A 4 Menu MoveDeskMenu
+
+#####
+# Junkify? Iconify?
+###########
+DestroyMenu JunkifyOrIconifyMenu
+AddToMenu JunkifyOrIconifyMenu "Hide how?" Title
+ + "&Nevermind"		Nop
+ + "&Junk"		ShadeMoveDeskPage 0 4 0 0
+ + "&Iconify"  		Iconify
+ + "&Lower"  		Lower
+
+
+#####
+# fvwm Window Operation Menu
+###########
+DestroyMenu FvwmWindowOpsMenu
+AddToMenu   FvwmWindowOpsMenu "Window Operations" Title
++ "&Move%menu/window-move.xpm%"  Move
++ "&Resize%menu/window-resize.xpm%"  Resize
++ "(De)&Iconify%menu/window-iconify.xpm%"  Iconify
++ "(Un)Ma&ximize%menu/window-maximize.xpm%"  Maximize
++ "(Un)S&hade%menu/window-shade.xpm%"  WindowShade
++ "(Un)S&tick%menu/window-stick.xpm%"  Stick
++ "&Lower" Lower
++ "Move to Desk" Popup MoveDeskMenu
++ "Til&e" Popup TileMenu
++ "C&ompositing" Popup CompositeMenu
++ "" Nop
++ "&Close %menu/window-close.xpm%"  Close
++ "Delete%menu/window-delete.xpm%"  Delete
++ "&Destroy%menu/window-destroy.xpm%"  Destroy
++ "" Nop
++ "&StaysOnTop%menu/window-raise.xpm%"  Pick (CirculateHit) Layer 0 6
++ "Layer +1%menu/window-raise.xpm%"  Pick (CirculateHit) Layer +1
++ "Stays&Put%menu/window.xpm%"  Pick (CirculateHit) Layer 0 4
++ "Layer -1%menu/window-lower.xpm%"  Pick (CirculateHit) Layer -1
++ "StaysOnBottom%menu/window-lower.xpm%"  Pick (CirculateHit) Layer 0 2
++ "" Nop
++ "%menu/window.xpm%Window Screenshot"  Pick (CirculateHit) FvwmWindowScreenshot
++ "%menu/display.xpm%Screenshot" FvwmDesktopScreenshot 5
++ "" Nop
++ "Identif&y%menu/window-identify.xpm%"  Module FvwmIdent
+
+DestroyFunc BuildMoveDeskMenu
+AddToFunc BuildMoveDeskMenu
++ I PipeRead "echo DestroyMenu MoveDeskMenu;\
+    	      echo \"AddToMenu   MoveDeskMenu \\\"Move to Desk\\\" Title\";\
+    	      for count in `seq 0 $0`; do echo \"+ \\\"&$count \\$[desk.name$count]\\\" MoveToDesk 0 $count\"; done"
+
+
+#####
+# Composite Menu
+###########
+
+DestroyMenu CompositeMenu
+AddToMenu   CompositeMenu "Compositing Operations" Title
++ "&transset-df" Exec exec transset-df -p
++ "&1 - Transparency 0.2" Exec exec transset-df -p 0.2
++ "&2 - Transparency 0.4" Exec exec transset-df -p 0.4
++ "&3 - Transparency 0.6" Exec exec transset-df -p 0.6
++ "&4 - Transparency 0.8" Exec exec transset-df -p 0.8
++ "&5 - Transparency 1.0" Exec exec transset-df -p 1.0
++ "Start &Xcompmgr" Exec exec xcompmgr
++ "&Stop Xcompmgr" Exec exec pkill xcompmgr
+
+
+
+#####
+# Root Menu
+###########
+
+DestroyMenu RootMenu
+AddToMenu RootMenu "Root Menu" Title
+ # + "Open XTerm Window" Popup NewWindowMenu
+ # + "Login as Root"     Exec exec xterm -T Root -n Root -e su -
+ # + "Login as Anyone"   Popup AnyoneMenu
+ # + "Remote Hosts"      Popup HostMenu
+ # + ""                  Nop
+ # + "X utilities"       Popup Xutils
+ # + ""                  Nop
+ # + "Fvwm Modules"      Popup Module-Popup
+ + "" 	   	       Nop
+ + "Fvwm&Console"      Module FvwmConsole
+ + "Fvwm &Window Ops"  Popup FvwmWindowOpsMenu
+ + "&Goto"	       Menu GotoMenu
+ + "&Tile"	       Popup TileMenu
+ + ""                  Nop
+ + "&Keyboard"	       Popup KeyboardMenu
+ + ""                  Nop
+ + "&Debian"	       Popup "/Debian"
+ + ""                  Nop
+ + "Previous Focus"    Prev (AcceptsFocus) Focus
+ + "Next Focus"        Next (AcceptsFocus) Focus
+ + ""                  Nop
+ + "Refresh screen"    Refresh
+ + ""                  Nop
+ + "Reset X %defaults"  Exec xrdb -load \
+                       $HOME/.Xdefaults
+ + ""                  Nop
+ + ""                  Nop
+ + "&Quit"                Popup Quit-Verify
+
+Key Tab A 4 Menu RootMenu
+
+DestroyMenu Quit-Verify
+AddToMenu Quit-Verify
+ + "Really Quit Fvwm?" Title
+ + "Yes, Really &Quit"  Quit
+ + "&Restart Fvwm"      Restart
+ + ""                  Nop
+ + "&No, Don't Quit"    Nop
+
+#####
+# Tile Menu
+###########
+
+DestroyMenu TileMenu
+AddToMenu TileMenu "Tile" Title
+ + "&Tile rows of 2"    Module FvwmRearrange -tile -mn 2 -h 0 0 93 96
+ + "Tile &Vertically"   Module FvwmRearrange -tile 0 0 93 96
+ + "Tile &Horizontally" Module FvwmRearrange -tile -h 0 0 93 96
+
+#####
+# Goto Menu
+###########
+
+DestroyMenu GotoMenu
+AddToMenu GotoMenu "Goto" Title
+ + "&Emacs"     GotoEmacs
+ + "&Iceweasel" GotoBrowser
+ + "&Mail"      GotoMail
+ + "&Pidgin"    GotoIM
+ + "M&usic"   GotoMusic
+
+#####
+# Goto Desk Menu
+################
+
+DestroyMenu GotoDeskMenu
+AddToMenu GotoDeskMenu "Goto Desk" Title
+ + "&` 0 - Emacs" GotoDesk 0 0
+ + "&1 " GotoDesk 0 1
+ + "&2 " GotoDesk 0 2
+ + "&3 " GotoDesk 0 3
+ + "&4 " GotoDesk 0 4
+
+# Local Variables:
+# mode:conf
+# End:
