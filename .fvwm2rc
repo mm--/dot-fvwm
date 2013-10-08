@@ -257,7 +257,6 @@ AddToFunc GotoBrowser
 DestroyFunc StartFunction
 AddToFunc   StartFunction
 + I All (conky) Close
-+ I Exec exec conky -c $./josh-one/conky/side-panel
 + I Module FvwmTaskBar
 # + I Module FvwmPager SidePager 0 2
 + I Module FvwmEvent
@@ -277,6 +276,9 @@ AddToFunc   InitFunction
 + I Exec exec xscreensaver -nosplash
 + I Exec exec fvwm-root -r $[FVWM_USERDIR]/wallpaper/salvador.png
 + I Exec exec ~/code/sh/log-alert.sh
++ I Exec exec conky -c $./josh-one/conky/side-panel
++ I Exec exec nm-applet
++ I Exec exec gnome-settings-daemon
 + I FvwmXTerm
 + I Module FvwmBanner
 
