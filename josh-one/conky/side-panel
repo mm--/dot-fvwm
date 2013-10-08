@@ -91,7 +91,7 @@ ${endif}
 Misc ${hr 2}
 Vol: ${exec amixer get Master -M | grep -oE "[[:digit:]]*%"}
 Fan: ${texeci 3 cat /proc/acpi/ibm/fan | grep speed | cut -s -f3}
-Temps: ${texeci 3 sensors -f | grep 'Core 1' | awk '{print $3}'}
+Temps: ${texeci 3 sensors | grep 'Core 1' | awk '{print $3}'}
 ${color lightblue}
 Battery 
 ${battery}
