@@ -40,6 +40,8 @@ EdgeScroll 100 100
 # EdgeResistance 150  150
 EdgeThickness 1
 
+ModulePath /usr/local/share/fvwm/perllib:+
+
 #####
 # Mouse and Focus Behavior
 ###########
@@ -186,18 +188,7 @@ AddToFunc   FvwmXTerm
 
 DestroyFunc FvwmXLock
 AddToFunc   FvwmXLock
-+ I PipeRead "pgrep -x xscreensaver > /dev/null || echo Exec exec xscreensaver"
-+ I Exec xscreensaver-command -lock; sleep 2; xset dpms force off
-
-DestroyFunc KillScreenSaver
-AddToFunc   KillScreenSaver
-+ I Exec killall xscreensaver
-+ I Exec xset -dpms
-
-DestroyFunc StartScreenSaver
-AddToFunc   StartScreenSaver
-+ I Exec exec xscreensaver
-+ I Exec xset +dpms
++ I Exec i3lock -c 008b8b -d
 
 DestroyFunc FvwmATerm
 AddToFunc   FvwmATerm
@@ -267,13 +258,11 @@ AddToFunc   StartFunction
 + I BuildDebianMenu
 + I BuildMoveDeskMenu 5
 + I Exec exec xrdb -load ~/.Xdefaults
-+ I Exec exec $[HOME]/code/sh/xscreensaver-lock.sh
 + I Exec exec xset b off # Turn off beeping
 + I Module FvwmCommandS
 
 DestroyFunc InitFunction
 AddToFunc   InitFunction
-+ I Exec exec xscreensaver -nosplash
 + I Exec exec fvwm-root -r $[FVWM_USERDIR]/wallpaper/salvador.png
 + I Exec exec ~/code/sh/log-alert.sh
 + I Exec exec conky -c $./josh-one/conky/side-panel
@@ -362,6 +351,7 @@ Mouse 5 T A FvwmWindowShade False
 Mouse 3 R C Module FvwmPager -transient
 Mouse 3 T A Menu FvwmWindowOpsMenu
 
+Key R A 4 GotoDeskAndPage prev
 # MPD bindings
 
 # Key XF86AudioPlay A N Exec exec mpc toggle
