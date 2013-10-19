@@ -62,7 +62,7 @@ ${alignc 20}${font Trebuchet MS:size=18}${time %H:%M}${font Trebuchet MS:size=8}
 ${alignc}${font Trebuchet MS:size=7}${time %a %Y.%b.%d}${font}
 # It doesn't seem to accept tildes. Grr
 # ${if_existing ~/.currenttask}
-${alignc}${texeci 3 ~/.fvwm/josh-one/conky/current-task-time.sh}
+${texeci 3 ~/.fvwm/josh-one/conky/current-task-time.sh}
 # ${texeci 3 sed -n '2p' ~/.currenttask}
 # ${endif}
 CPU Usage: $cpu% ${hr 2}
